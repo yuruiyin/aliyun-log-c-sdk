@@ -9,6 +9,7 @@
 #include "log_define.h"
 #include "log_producer_config.h"
 #include "log_builder.h"
+#include <stdint.h>
 LOG_CPP_START
 
 #define LOG_PRODUCER_SEND_MAGIC_NUM 0x1B35487A

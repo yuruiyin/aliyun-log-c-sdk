@@ -3,7 +3,7 @@
 
 
 #ifdef WIN32
-#define LOG_EXPORT _declspec(dllexport)
+#define LOG_EXPORT
 #else
 #define LOG_EXPORT
 #endif

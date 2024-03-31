@@ -124,7 +124,11 @@ void get_now_time_str(char * buffer, int bufLen, int timeOffset)
     {
         rawtime += timeOffset;
     }
+#ifdef WIN32
+    gmtime_s(&rawtime, &timeinfo);
+#else
     gmtime_r(&rawtime, &timeinfo);
+#endif
     sls_rfc822_date(buffer, &timeinfo);
 }
 

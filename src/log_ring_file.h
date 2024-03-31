@@ -6,6 +6,7 @@
 #define LOG_C_SDK_LOG_RING_FILE_H
 
 #include "log_inner_include.h"
+#include <stdint.h>
 
 typedef struct _log_ring_file
 {
