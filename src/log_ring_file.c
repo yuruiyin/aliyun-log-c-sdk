@@ -33,7 +33,9 @@ static int log_ring_file_open_fd(log_ring_file *file, uint64_t offset, int32_t f
     int openFlag = O_RDWR|O_CREAT;
     if (file->syncWrite)
     {
+#ifdef O_SYNC
         openFlag |= O_SYNC;
+#endif
     }
     file->nowFD = open(filePath, openFlag, 0644);
     if (file->nowFD < 0)
@@ -216,7 +218,11 @@ int log_ring_file_flush(log_ring_file *file)
 {
     if (file->nowFD > 0)
     {
+#ifdef WIN32
+        return _commit(file->nowFD);
+#else
         return fsync(file->nowFD);
+#endif
     }
     return -1;
 }
