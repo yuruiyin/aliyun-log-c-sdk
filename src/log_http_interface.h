@@ -22,7 +22,7 @@ void log_set_http_post_func(int (*f)(const char *url,
  * @param f function ptr to get time unix seconds, like time(NULL)
  */
 __attribute__ ((visibility("default")))
-void log_set_get_time_unix_func(unsigned int (*f)());
+void log_set_get_time_unix_func(unsigned long (*f)());
 
 __attribute__ ((visibility("default")))
 void log_set_http_header_inject_func(void (*f) (log_producer_config *config,

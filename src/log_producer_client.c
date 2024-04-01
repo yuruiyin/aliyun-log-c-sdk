@@ -13,7 +13,7 @@
 static uint32_t s_init_flag = 0;
 static log_producer_result s_last_result = 0;
 
-unsigned int LOG_GET_TIME();
+unsigned long LOG_GET_TIME();
 
 typedef struct _producer_client_private {
 

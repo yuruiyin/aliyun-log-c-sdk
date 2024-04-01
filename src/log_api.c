@@ -3,6 +3,7 @@
 #include <string.h>
 #include "sds.h"
 #include "inner_log.h"
+#include <time.h>
 
 int LOG_OS_HttpPost(const char *url,
                     char **header_array,
@@ -119,17 +120,13 @@ void sls_rfc822_date(char *date_str, struct tm * xt)
 void get_now_time_str(char * buffer, int bufLen, int timeOffset)
 {
     time_t rawtime = LOG_GET_TIME();
-    struct tm timeinfo;
     if (timeOffset != 0)
     {
         rawtime += timeOffset;
     }
-#ifdef WIN32
-    gmtime_s(&rawtime, &timeinfo);
-#else
-    gmtime_r(&rawtime, &timeinfo);
-#endif
-    sls_rfc822_date(buffer, &timeinfo);
+    struct tm *timeinfo;
+    timeinfo = gmtime(&rawtime);
+    sls_rfc822_date(buffer, timeinfo);
 }
 
 void post_log_result_destroy(post_log_result * result)

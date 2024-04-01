@@ -14,7 +14,7 @@ void log_set_http_post_func(int (*f)(const char *url,
                                      int data_len));
 
 __attribute__ ((visibility("default")))
-void log_set_get_time_unix_func(unsigned int (*f)());
+void log_set_get_time_unix_func(unsigned long (*f)());
 
 __attribute__ ((visibility("default")))
 void log_set_http_header_inject_func(void (*f) (log_producer_config *config,
@@ -35,7 +35,7 @@ static int (*__LOG_OS_HttpPost)(const char *url,
                                 const void *data,
                                 int data_len) = NULL;
 
-static unsigned int (*__LOG_GET_TIME)() = NULL;
+static unsigned long (*__LOG_GET_TIME)() = NULL;
 
 static void (*__log_http_header_injector)(log_producer_config *config, char **src_headers, int src_count, char **dest_headers, int *dest_count) = NULL;
 static void (*__log_http_header_release_injector)(log_producer_config *config, char **dest_headers, int dest_count) = NULL;
@@ -50,12 +50,12 @@ void log_set_http_post_func(int (*f)(const char *url,
     __LOG_OS_HttpPost = f;
 }
 
-void log_set_get_time_unix_func(unsigned int (*f)())
+void log_set_get_time_unix_func(unsigned long (*f)())
 {
     __LOG_GET_TIME = f;
 }
 
-unsigned int LOG_GET_TIME() {
+unsigned long LOG_GET_TIME() {
     if (__LOG_GET_TIME == NULL) {
         return time(NULL);
     }
