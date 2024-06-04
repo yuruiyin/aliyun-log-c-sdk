@@ -7,9 +7,9 @@
 #include "log_builder.h"
 LOG_CPP_START
 
-#ifdef WIN32
+#ifdef _WIN32
 #undef interface
-#endif // WIN32
+#endif // _WIN32
 
 struct _log_post_option
 {

@@ -5,7 +5,7 @@
 
 
 //不同操作系统资源相关的工具宏定义
-#ifdef WIN32
+#ifdef _WIN32
 
 //临界区资源
 
@@ -345,6 +345,6 @@ typedef struct _FILETIME
     unsigned long dwHighDateTime;
 } FILETIME;
 
-#endif //WIN32
+#endif //_WIN32
 
 #endif //LOG_MULTI_THREAD_UTIL_H

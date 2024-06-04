@@ -6,7 +6,13 @@
 #include "inner_log.h"
 #include "md5.h"
 #include "sds.h"
+
+#ifdef _WIN32
+#include <sys/timeb.h>
+#include <windows.h>
+#else
 #include <sys/time.h>
+#endif
 
 #ifdef __MACH__
 #include <stdio.h>
@@ -20,10 +26,51 @@
 #define MAX_MANAGER_FLUSH_COUNT 100  // 10MS * 100
 #define MAX_SENDER_FLUSH_COUNT 100 // 10ms * 100
 
-#ifdef WIN32
+#ifdef _WIN32
 DWORD WINAPI log_producer_send_thread(LPVOID param);
 #else
 void * log_producer_send_thread(void * param);
+#endif
+
+#ifdef _WIN32
+#define CLOCK_REALTIME 0
+#define CLOCK_MONOTONIC 1
+int clock_gettime(int clk_id, struct timespec *tp);
+#endif
+
+#ifdef _WIN32
+int clock_gettime(int clk_id, struct timespec *tp) {
+    LARGE_INTEGER frequency;
+    LARGE_INTEGER counter;
+
+    if (clk_id == CLOCK_REALTIME) {
+        FILETIME ft;
+        ULARGE_INTEGER uli;
+
+        GetSystemTimeAsFileTime(&ft);
+        uli.LowPart = ft.dwLowDateTime;
+        uli.HighPart = ft.dwHighDateTime;
+
+        // Convert to seconds and nanoseconds
+        tp->tv_sec = (long)((uli.QuadPart - 116444736000000000ULL) / 10000000ULL);
+        tp->tv_nsec = (long)(((uli.QuadPart - 116444736000000000ULL) % 10000000ULL) * 100);
+        return 0;
+    } else if (clk_id == CLOCK_MONOTONIC) {
+        if (!QueryPerformanceFrequency(&frequency)) {
+            return -1;
+        }
+        if (!QueryPerformanceCounter(&counter)) {
+            return -1;
+        }
+
+        tp->tv_sec = counter.QuadPart / frequency.QuadPart;
+        tp->tv_nsec = (long)(((counter.QuadPart % frequency.QuadPart) * 1e9) / frequency.QuadPart);
+        return 0;
+    } else {
+        // Unsupported clock_id
+        return -1;
+    }
+}
 #endif
 
 void _generate_pack_id_timestamp(long *timestamp)
@@ -38,6 +85,7 @@ void _generate_pack_id_timestamp(long *timestamp)
     ts.tv_sec = mts.tv_sec;
     ts.tv_nsec = mts.tv_nsec;
 #else
+    #define CLOCK_REALTIME 0
     clock_gettime(CLOCK_REALTIME, &ts);
 #endif
     *(timestamp) = ts.tv_nsec;
@@ -103,7 +151,7 @@ void _try_flush_loggroup(log_producer_manager * producer_manager)
     }
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 DWORD WINAPI log_producer_flush_thread(LPVOID param)
 #else
 void * log_producer_flush_thread(void * param)
@@ -342,7 +390,7 @@ void destroy_log_producer_manager(log_producer_manager * manager)
     int32_t total_wait_count = manager->producer_config->destroyFlusherWaitTimeoutSec > 0 ? manager->producer_config->destroyFlusherWaitTimeoutSec * 100 : MAX_MANAGER_FLUSH_COUNT;
     total_wait_count += manager->producer_config->destroySenderWaitTimeoutSec > 0 ? manager->producer_config->destroySenderWaitTimeoutSec * 100 : MAX_SENDER_FLUSH_COUNT;
 
-#ifdef WIN32
+#ifdef _WIN32
     Sleep(10);
 #else
     usleep(10 * 1000);
@@ -353,7 +401,7 @@ void destroy_log_producer_manager(log_producer_manager * manager)
             manager->send_param_queue_write - manager->send_param_queue_read > 0 ||
             (manager->sender_data_queue != NULL && log_queue_size(manager->sender_data_queue) > 0) )
     {
-#ifdef WIN32
+#ifdef _WIN32
         Sleep(10);
 #else
         usleep(10 * 1000);

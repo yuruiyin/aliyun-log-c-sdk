@@ -9,7 +9,7 @@
 #include <stdarg.h>
 #include <errno.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #define inline __inline
 #include <winsock2.h>
 #include <sys/timeb.h>
@@ -66,7 +66,7 @@ typedef int socklen_t;
 #endif
 
 
-#if defined WIN32 || defined _VXWORKS
+#if defined _WIN32 || defined _VXWORKS
 
 typedef unsigned char u_char;
 typedef unsigned char u_int8;

@@ -5,6 +5,8 @@
 #include "inner_log.h"
 #include <time.h>
 
+#define MAX_HEADER_COUNT 50
+
 int LOG_OS_HttpPost(const char *url,
                     char **header_array,
                     int header_count,
@@ -622,8 +624,7 @@ post_log_result * post_logs_from_lz4buf_with_config(log_producer_config *config,
         sds req = sdsnewEmpty(64);
         sds err = sdsnew("n/a");
 
-        const int max_header_count = 50;
-        char *header_array[max_header_count];
+        char *header_array[MAX_HEADER_COUNT];
         int header_count = 0;
         struct cur_slist *h = headers;
         while(h != NULL) {
@@ -632,7 +633,7 @@ post_log_result * post_logs_from_lz4buf_with_config(log_producer_config *config,
             h = h->next;
         }
 
-        char *dest_header_array[max_header_count];
+        char *dest_header_array[MAX_HEADER_COUNT];
         int *dest_count = (int *)malloc(sizeof(int));
         memset(dest_count, 0, sizeof(int));
 
@@ -713,8 +714,7 @@ post_log_result * post_logs_from_lz4buf_webtracking(const char *endpoint, const 
         sds req = sdsnewEmpty(64);
         sds err = sdsnew("n/a");
 
-        const int max_header_count = 50;
-        char *header_array[max_header_count];
+        char *header_array[MAX_HEADER_COUNT];
         int header_count = 0;
         struct cur_slist *h = headers;
         while(h != NULL) {

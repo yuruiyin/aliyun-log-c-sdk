@@ -6,17 +6,17 @@
 LOG_CPP_START
 
 // register external function
-__attribute__ ((visibility("default")))
+DLL_EXPORT
 void log_set_http_post_func(int (*f)(const char *url,
                                      char **header_array,
                                      int header_count,
                                      const void *data,
                                      int data_len));
 
-__attribute__ ((visibility("default")))
+DLL_EXPORT
 void log_set_get_time_unix_func(unsigned long (*f)());
 
-__attribute__ ((visibility("default")))
+DLL_EXPORT
 void log_set_http_header_inject_func(void (*f) (log_producer_config *config,
                                                char **src_headers,
                                                int src_count,

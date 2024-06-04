@@ -2,7 +2,7 @@
 #define LIBLOG_DEFINE_H
 
 
-#ifdef WIN32
+#ifdef _WIN32
 #define LOG_EXPORT
 #else
 #define LOG_EXPORT
